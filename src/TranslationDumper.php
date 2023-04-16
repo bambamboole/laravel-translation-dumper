@@ -11,6 +11,7 @@ class TranslationDumper implements TranslationDumperInterface
         private readonly ArrayExporter $exporter,
         private readonly string $languageFilePath,
         private string $locale,
+        private readonly string $dumpPrefix = 'x-',
     ) {
     }
 
@@ -58,7 +59,7 @@ class TranslationDumper implements TranslationDumperInterface
             }
 
             $lastKey = array_shift($keys);
-            $current[$lastKey] = 'x-'.$dottedString;
+            $current[$lastKey] = $this->dumpPrefix.$dottedString;
         }
 
         return $result;

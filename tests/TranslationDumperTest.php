@@ -48,7 +48,7 @@ class TranslationDumperTest extends TestCase
         $this->createTranslationDumper()->dump($given);
     }
 
-    public function provideTestData(): array
+    public static function provideTestData(): array
     {
         return [
             [
