@@ -10,10 +10,11 @@ This is especially useful if you have dynamic translation keys where static dump
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via composer.
+Since this package should only be used in development, you should add the `--dev` flag.
 
 ```bash
-composer require bambamboole/laravel-translation-dumper
+composer require --dev bambamboole/laravel-translation-dumper
 ```
 
 ## Usage
