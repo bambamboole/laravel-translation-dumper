@@ -1,0 +1,51 @@
+{
+    "name": "bambamboole/laravel-translation-dumper",
+    "description": "A laravel package to dump missing translation keys into the translation files",
+    "keywords": [
+        "bambamboole",
+        "laravel-translation-dumper"
+    ],
+    "homepage": "https://github.com/bambamboole/laravel-translation-dumper",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Manuel Christlieb",
+            "email": "manuel@christlieb.eu"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^9.0|^10.0",
+        "illuminate/translation": "^9.0|^10.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.8",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bambamboole\\LaravelTranslationDumper\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bambamboole\\LaravelTranslationDumper\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bambamboole\\LaravelTranslationDumper\\LaravelTranslationDumperServiceProvider"
+            ]
+        }
+    }
+}
