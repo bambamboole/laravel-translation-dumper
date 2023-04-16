@@ -30,6 +30,7 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
             TranslationDumper::class,
             static fn (Application $app) => new TranslationDumper(
                 new Filesystem(),
+                new ArrayExporter(),
                 $app->langPath(),
                 $app->make(Repository::class)->get('app.locale'),
             ),

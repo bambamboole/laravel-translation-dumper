@@ -8,6 +8,7 @@ class TranslationDumper implements TranslationDumperInterface
 {
     public function __construct(
         private readonly Filesystem $filesystem,
+        private readonly ArrayExporter $exporter,
         private readonly string $languageFilePath,
         private string $locale,
     ) {
@@ -27,7 +28,7 @@ class TranslationDumper implements TranslationDumperInterface
             $file = $this->languageFilePath."/{$this->locale}/{$key}.php";
             $keys = $this->mergeWithExistingKeys($file, $value);
 
-            $content = $this->export($keys);
+            $content = $this->exporter->export($keys);
             $this->filesystem->put($file, $content);
         }
     }
@@ -92,17 +93,5 @@ class TranslationDumper implements TranslationDumperInterface
         ksort($merged);
 
         return $merged;
-    }
-
-    private function export(array $expression): string
-    {
-        $export = var_export($expression, true);
-        $export = preg_replace('/^([ ]*)(.*)/m', '$1$1$2', $export);
-        $array = preg_split("/\r\n|\n|\r/", $export);
-        $array = preg_replace(['/\s*array\s\($/', '/\)(,)?$/', '/\s=>\s$/'], [null, ']$1', ' => ['], $array);
-
-        return "<?php declare(strict_types=1);\n\nreturn "
-            .implode(PHP_EOL, array_filter(['['] + $array))
-            .';'."\n";
     }
 }
