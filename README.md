@@ -4,7 +4,9 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
 ![GitHub Actions](https://github.com/bambamboole/laravel-translation-dumper/actions/workflows/main.yml/badge.svg)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+This package provides an option to extend Laravels Translator to write missing 
+dotted translation keys to their respective translation files.  
+This is especially useful if you have dynamic translation keys where static dumpers do not work.
 
 ## Installation
 
@@ -17,7 +19,7 @@ composer require bambamboole/laravel-translation-dumper
 ## Usage
 
 ```php
-// Usage description here
+To enable the dumper, you have to set the environment variable `DUMP_TRANSLATIONS` to `true`.
 ```
 
 ### Testing

@@ -19,34 +19,34 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Register the application services.
-     */
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'translation');
 
-        $this->app->singleton(
-            TranslationDumper::class,
-            static fn (Application $app) => new TranslationDumper(
-                new Filesystem(),
-                new ArrayExporter(),
-                $app->langPath(),
-                $app->make(Repository::class)->get('app.locale'),
-            ),
-        );
+        if ($this->app->make(Repository::class)->get('translation.dump_translations')) {
+            $this->app->singleton(
+                TranslationDumper::class,
+                static fn (Application $app) => new TranslationDumper(
+                    new Filesystem(),
+                    new ArrayExporter(),
+                    $app->langPath(),
+                    $app->make(Repository::class)->get('app.locale'),
+                    $app->make(Repository::class)->get('translation.dump_prefix'),
+                ),
+            );
 
-        $this->app->bind(
-            TranslationDumperInterface::class,
-            static fn (Application $app) => $app->make($app->make(Repository::class)->get('translation.dumper'))
-        );
+            $this->app->bind(
+                TranslationDumperInterface::class,
+                static fn (Application $app) => $app->make($app->make(Repository::class)->get('translation.dumper'))
+            );
 
-        $this->app->extend(
-            'translator',
-            static fn (Translator $translator, $app) => new DumpingTranslator(
-                $translator,
-                $app->make(TranslationDumperInterface::class),
-            ),
-        );
+            $this->app->extend(
+                'translator',
+                static fn (Translator $translator, $app) => new DumpingTranslator(
+                    $translator,
+                    $app->make(TranslationDumperInterface::class),
+                ),
+            );
+        }
     }
 }
