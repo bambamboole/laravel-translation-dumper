@@ -1,4 +1,4 @@
-# Very short description of the package
+# Laravel Translation Dumper
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
 [![Total Downloads](https://img.shields.io/packagist/dt/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
@@ -22,6 +22,13 @@ composer require --dev bambamboole/laravel-translation-dumper
 ```php
 To enable the dumper, you have to set the environment variable `DUMP_TRANSLATIONS` to `true`.
 ```
+
+## Workflow
+Just write your templates and use the `__()` helper as usual with your preferred 
+translation key pattern. As soon as you visit the page, the missing translation keys,
+they will be written to the respective translation files in the structure that the first 
+part of the key is the file name and the rest is the nested path of a PHP array.
+As value it takes the translation key itself prefixed by a configurable prefix.
 
 ### Testing
 
