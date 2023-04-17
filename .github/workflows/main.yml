@@ -1,7 +1,7 @@
 name: run-tests
 
-on:
-  push:
+on: [push, pull_request]
+
 
 jobs:
   test:
@@ -24,4 +24,6 @@ jobs:
         run: |
           composer install
       - name: Execute tests
-        run: composer test
+        run: vendor/bin/phpunit --coverage-clover coverage.xml .
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
