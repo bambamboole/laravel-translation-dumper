@@ -36,7 +36,21 @@ class TranslationDumper implements TranslationDumperInterface
 
     private function filterTranslationKeys(array $unfilteredKeys): array
     {
-        $keys = array_filter($unfilteredKeys, fn (string $key) => ! str_contains($key, ' ') && str_contains($key, '.'));
+        $keys = array_filter(
+            $unfilteredKeys,
+            function (string $key) {
+                if (str_contains($key, ' ')) {
+                    return false;
+                }
+                if (! str_contains($key, '.')) {
+                    return false;
+                }
+                if (str_ends_with($key, '.')) {
+                    return false;
+                }
+
+                return true;
+            });
         $keys = array_unique($keys);
 
         return array_values($keys);

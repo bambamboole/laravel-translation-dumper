@@ -27,22 +27,34 @@ class TranslationDumperTest extends TestCase
     /** @dataProvider provideTestData */
     public function testItDumpsTheKeysAsExpected(array $given, array $expected): void
     {
-        foreach ($expected as $key => $expectedArray) {
-            $file = self::TEST_LANGUAGE_FILE_PATH.'/'.self::TEST_LOCALE.'/'.$key.'.php';
+        if (empty($expected)) {
             $this->filesystem
-                ->expects($this->once())
-                ->method('exists')
-                ->with($file)
-                ->willReturn(false);
+                ->expects($this->never())
+                ->method('exists');
             $this->exporter
-                ->expects($this->once())
-                ->method('export')
-                ->with($expectedArray)
-                ->willReturn('test');
+                ->expects($this->never())
+                ->method('export');
             $this->filesystem
-                ->expects($this->once())
-                ->method('put')
-                ->with($file, 'test');
+                ->expects($this->never())
+                ->method('put');
+        } else {
+            foreach ($expected as $key => $expectedArray) {
+                $file = self::TEST_LANGUAGE_FILE_PATH.'/'.self::TEST_LOCALE.'/'.$key.'.php';
+                $this->filesystem
+                    ->expects($this->once())
+                    ->method('exists')
+                    ->with($file)
+                    ->willReturn(false);
+                $this->exporter
+                    ->expects($this->once())
+                    ->method('export')
+                    ->with($expectedArray)
+                    ->willReturn('test');
+                $this->filesystem
+                    ->expects($this->once())
+                    ->method('put')
+                    ->with($file, 'test');
+            }
         }
 
         $this->createTranslationDumper()->dump($given);
@@ -54,6 +66,10 @@ class TranslationDumperTest extends TestCase
             [
                 ['foo.bar.baz'],
                 ['foo' => ['bar' => ['baz' => 'x-foo.bar.baz']]],
+            ],
+            [
+                ['foo.'],
+                [],
             ],
         ];
     }
