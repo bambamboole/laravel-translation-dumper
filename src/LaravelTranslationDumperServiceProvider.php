@@ -14,7 +14,7 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => $this->app->configPath('translation.php'),
+                dirname(__DIR__).'/config/config.php' => $this->app->configPath('translation.php'),
             ], 'config');
         }
     }

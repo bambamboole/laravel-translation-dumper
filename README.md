@@ -3,6 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
 [![Total Downloads](https://img.shields.io/packagist/dt/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
 ![GitHub Actions](https://github.com/bambamboole/laravel-translation-dumper/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/bambamboole/laravel-translation-dumper/branch/main/graph/badge.svg?token=PTTDMH5DSJ)](https://codecov.io/gh/bambamboole/laravel-translation-dumper)
 
 This package provides an option to extend Laravels Translator to write missing 
 dotted translation keys to their respective translation files.  
