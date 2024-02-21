@@ -26,10 +26,12 @@ class TranslationDumper implements TranslationDumperInterface
         $result = $this->transformDottedStringsToArray($dottedStrings);
 
         foreach ($result as $key => $value) {
-            $file = $this->languageFilePath."/{$this->locale}/{$key}.php";
+            $path = $this->languageFilePath.'/'.$this->locale;
+            $file = "{$path}/{$key}.php";
             $keys = $this->mergeWithExistingKeys($file, $value);
 
             $content = $this->exporter->export($keys);
+            $this->filesystem->ensureDirectoryExists($path);
             $this->filesystem->put($file, $content);
         }
     }
