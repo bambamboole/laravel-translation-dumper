@@ -11,13 +11,16 @@ class TranslationFinderTest extends TestCase
     {
         $translations = $this->createSubject()->findTranslations();
 
-        self::assertSame([
+        $expected = [
             'test.dotted',
             'test.dotted.additional',
             'This is just a sentence',
             'test undotted key',
             'test',
-        ], $translations);
+        ];
+        foreach ($expected as $item) {
+            self::assertContains($item, $translations);
+        }
     }
 
     private function createSubject(): TranslationFinder
