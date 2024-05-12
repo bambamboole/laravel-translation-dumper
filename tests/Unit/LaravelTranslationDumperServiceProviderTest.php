@@ -35,7 +35,7 @@ class LaravelTranslationDumperServiceProviderTest extends TestCase
         self::assertEquals(
             [
                 LaravelTranslationDumperServiceProvider::class => [
-                    dirname(__DIR__).'/config/config.php' => '/foo/bar/config',
+                    dirname(__DIR__, 2).'/config/config.php' => '/foo/bar/config',
                 ],
             ],
             $serviceProvider::$publishes,
