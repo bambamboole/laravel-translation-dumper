@@ -6,7 +6,7 @@
 [![codecov](https://codecov.io/gh/bambamboole/laravel-translation-dumper/branch/main/graph/badge.svg?token=PTTDMH5DSJ)](https://codecov.io/gh/bambamboole/laravel-translation-dumper)
 
 This package provides an option to extend Laravels Translator to write missing 
-dotted translation keys to their respective translation files.  
+translation keys to their respective translation files.  
 This is especially useful if you have dynamic translation keys where static dumpers do not work.
 
 ## Installation
