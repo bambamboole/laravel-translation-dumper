@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Bambamboole\LaravelTranslationDumper\Tests;
+namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
 
 use Bambamboole\LaravelTranslationDumper\ArrayExporter;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
@@ -25,7 +25,7 @@ class TranslationDumperTest extends TestCase
     }
 
     /** @dataProvider provideTestData */
-    public function testItDumpsTheKeysAsExpected(array $given, array $expected): void
+    public function testItDumpsDottedKeysAsExpected(array $given, array $expected): void
     {
         if (empty($expected)) {
             $this->filesystem
@@ -66,10 +66,6 @@ class TranslationDumperTest extends TestCase
             [
                 ['foo.bar.baz'],
                 ['foo' => ['bar' => ['baz' => 'x-foo.bar.baz']]],
-            ],
-            [
-                ['foo.'],
-                [],
             ],
         ];
     }

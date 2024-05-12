@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Bambamboole\LaravelTranslationDumper\Tests;
+namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
 
 use Bambamboole\LaravelTranslationDumper\DumpingTranslator;
 use Bambamboole\LaravelTranslationDumper\TranslationDumperInterface;
