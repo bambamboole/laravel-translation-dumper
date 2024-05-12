@@ -18,7 +18,7 @@ class TranslationDumperTest extends TestCase
         $workingPath = str_replace('lang', $testFolderName, self::TEST_LANGUAGE_PATH);
 
         $fs->copyDirectory(self::TEST_LANGUAGE_PATH, $workingPath);
-        $this->createSubject($workingPath)->dump(['test.dotted.additional', 'test undotted key']);
+        $this->createSubject($workingPath)->dump(['test.dotted.additional', 'test undotted key', 'word', 'Works.']);
 
         $files = $fs->allFiles($workingPath);
 

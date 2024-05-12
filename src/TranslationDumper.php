@@ -132,15 +132,8 @@ class TranslationDumper implements TranslationDumperInterface
 
         $nonDottedKeys = array_combine($nonDottedKeys, array_map(fn ($key) => $this->dumpPrefix.$key, $nonDottedKeys));
         $keys = array_merge($existingKeys, $nonDottedKeys);
-        ksort($keys);
+        ksort($keys, SORT_NATURAL | SORT_FLAG_CASE);
         $this->filesystem->ensureDirectoryExists($this->languageFilePath);
         $this->filesystem->put($file, json_encode($keys, JSON_PRETTY_PRINT).PHP_EOL);
-    }
-
-    private function filterForNonDottedTranslationKeys(array $translationKeys): array
-    {
-        $dottedKeys = $this->filterForDottedTranslationKeys($translationKeys);
-
-        return array_unique(array_diff($translationKeys, $dottedKeys));
     }
 }

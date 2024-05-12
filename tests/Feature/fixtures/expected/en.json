@@ -1,4 +1,6 @@
 {
+    "test undotted key": "x-test undotted key",
     "This is a non dotted translation key": "This is a non dotted translation key",
-    "test undotted key": "x-test undotted key"
+    "word": "x-word",
+    "Works.": "x-Works."
 }
