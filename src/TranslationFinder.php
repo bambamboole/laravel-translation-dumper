@@ -89,7 +89,10 @@ class TranslationFinder
         // Remove duplicates
         $groupKeys = array_unique($groupKeys);
         $stringKeys = array_unique($stringKeys);
+        // Merge and order them
+        $keys = array_merge($groupKeys, $stringKeys);
+        ksort($keys, SORT_NATURAL | SORT_FLAG_CASE);
 
-        return array_merge($groupKeys, $stringKeys);
+        return $keys;
     }
 }
