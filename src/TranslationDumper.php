@@ -22,7 +22,13 @@ class TranslationDumper implements TranslationDumperInterface
 
     public function dump(array $translationKeys): void
     {
-        $dottedStrings = $this->filterTranslationKeys($translationKeys);
+        $dottedStrings = $this->filterForDottedTranslationKeys($translationKeys);
+        $this->dumpDottedKeys($dottedStrings);
+        $this->dumpNonDottedKeys(array_unique(array_diff($translationKeys, $dottedStrings)));
+    }
+
+    private function dumpDottedKeys(array $dottedStrings): void
+    {
         $result = $this->transformDottedStringsToArray($dottedStrings);
 
         foreach ($result as $key => $value) {
@@ -36,7 +42,7 @@ class TranslationDumper implements TranslationDumperInterface
         }
     }
 
-    private function filterTranslationKeys(array $unfilteredKeys): array
+    private function filterForDottedTranslationKeys(array $unfilteredKeys): array
     {
         $keys = array_filter(
             $unfilteredKeys,
@@ -110,5 +116,24 @@ class TranslationDumper implements TranslationDumperInterface
         ksort($merged);
 
         return $merged;
+    }
+
+    private function dumpNonDottedKeys(array $nonDottedKeys): void
+    {
+        if (empty($nonDottedKeys)) {
+            return;
+        }
+        $file = "{$this->languageFilePath}/{$this->locale}.json";
+        if ($this->filesystem->exists($file)) {
+            $existingKeys = json_decode($this->filesystem->get($file), true);
+        } else {
+            $existingKeys = [];
+        }
+
+        $nonDottedKeys = array_combine($nonDottedKeys, array_map(fn ($key) => $this->dumpPrefix.$key, $nonDottedKeys));
+        $keys = array_merge($existingKeys, $nonDottedKeys);
+        ksort($keys, SORT_NATURAL | SORT_FLAG_CASE);
+        $this->filesystem->ensureDirectoryExists($this->languageFilePath);
+        $this->filesystem->put($file, json_encode($keys, JSON_PRETTY_PRINT).PHP_EOL);
     }
 }
