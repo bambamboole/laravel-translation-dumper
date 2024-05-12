@@ -2,6 +2,7 @@
 
 namespace Bambamboole\LaravelTranslationDumper;
 
+use Bambamboole\LaravelTranslationDumper\Console\FindTranslationsCommand;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
@@ -13,6 +14,9 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
+            $this->commands([
+                FindTranslationsCommand::class,
+            ]);
             $this->publishes([
                 dirname(__DIR__).'/config/config.php' => $this->app->configPath('translation.php'),
             ], 'config');
@@ -23,23 +27,28 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'translation');
 
+        $this->app->singleton(
+            TranslationDumper::class,
+            static fn (Application $app) => new TranslationDumper(
+                new Filesystem(),
+                new ArrayExporter(),
+                $app->langPath(),
+                $app->make(Repository::class)->get('app.locale'),
+                $app->make(Repository::class)->get('translation.dump_prefix'),
+            ),
+        );
+
+        $this->app->bind(
+            TranslationDumperInterface::class,
+            static fn (Application $app) => $app->make($app->make(Repository::class)->get('translation.dumper'))
+        );
+
+        $this->app->singleton(
+            TranslationFinder::class,
+            static fn (Application $app) => new TranslationFinder($app->basePath()),
+        );
+
         if ($this->app->make(Repository::class)->get('translation.dump_translations')) {
-            $this->app->singleton(
-                TranslationDumper::class,
-                static fn (Application $app) => new TranslationDumper(
-                    new Filesystem(),
-                    new ArrayExporter(),
-                    $app->langPath(),
-                    $app->make(Repository::class)->get('app.locale'),
-                    $app->make(Repository::class)->get('translation.dump_prefix'),
-                ),
-            );
-
-            $this->app->bind(
-                TranslationDumperInterface::class,
-                static fn (Application $app) => $app->make($app->make(Repository::class)->get('translation.dumper'))
-            );
-
             $this->app->extend(
                 'translator',
                 static fn (Translator $translator, $app) => new DumpingTranslator(
