@@ -12,8 +12,7 @@ class TranslationDumper implements TranslationDumperInterface
         private readonly string $languageFilePath,
         private string $locale,
         private readonly string $dumpPrefix = 'x-',
-    ) {
-    }
+    ) {}
 
     public function setLocale(string $locale): void
     {

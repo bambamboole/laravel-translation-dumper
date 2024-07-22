@@ -11,13 +11,13 @@ class DumpingTranslator implements TranslatorInterface
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly TranslationDumperInterface $translationDumper,
-    ) {
-    }
+        private readonly array $ignoreKeys = [],
+    ) {}
 
     public function get($key, array $replace = [], $locale = null, $fallback = true)
     {
         $translation = $this->translator->get($key, $replace, $locale, $fallback);
-        if ($translation === $key) {
+        if ($translation === $key && ! $this->shouldBeIgnored($key)) {
             $this->keysWithMissingTranslations[] = $key;
         }
 
@@ -52,5 +52,16 @@ class DumpingTranslator implements TranslatorInterface
         }
 
         $this->translationDumper->dump($this->keysWithMissingTranslations);
+    }
+
+    private function shouldBeIgnored(string $key): bool
+    {
+        foreach ($this->ignoreKeys as $ignoreKey) {
+            if (str_contains($key, $ignoreKey)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
