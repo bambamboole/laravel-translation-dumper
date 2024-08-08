@@ -6,5 +6,5 @@ interface TranslationDumperInterface
 {
     public function setLocale(string $locale): void;
 
-    public function dump(array $translationKeys): void;
+    public function dump(array $translations): void;
 }

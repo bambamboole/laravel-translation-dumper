@@ -2,15 +2,19 @@
 
 namespace Bambamboole\LaravelTranslationDumper;
 
+use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Illuminate\Contracts\Translation\Translator as TranslatorInterface;
 
 class DumpingTranslator implements TranslatorInterface
 {
     private array $keysWithMissingTranslations = [];
 
+    private array $missingTranslations = [];
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly TranslationDumperInterface $translationDumper,
+        private readonly string $dumpPrefix = 'x-',
         private readonly array $ignoreKeys = [],
     ) {}
 
@@ -19,6 +23,7 @@ class DumpingTranslator implements TranslatorInterface
         $translation = $this->translator->get($key, $replace, $locale, $fallback);
         if ($translation === $key && ! $this->shouldBeIgnored($key)) {
             $this->keysWithMissingTranslations[] = $key;
+            $this->missingTranslations[] = new Translation($key, $this->dumpPrefix.$key, $replace);
         }
 
         return $translation;
@@ -51,7 +56,7 @@ class DumpingTranslator implements TranslatorInterface
             return;
         }
 
-        $this->translationDumper->dump($this->keysWithMissingTranslations);
+        $this->translationDumper->dump($this->missingTranslations);
     }
 
     private function shouldBeIgnored(string $key): bool
