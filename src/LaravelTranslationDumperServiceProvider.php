@@ -31,7 +31,6 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
                     new ArrayExporter(),
                     $app->langPath(),
                     $app->make(Repository::class)->get('app.locale'),
-                    $app->make(Repository::class)->get('translation.dump_prefix'),
                 ),
             );
 
@@ -45,6 +44,7 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
                 static fn (Translator $translator, $app) => new DumpingTranslator(
                     $translator,
                     $app->make(TranslationDumperInterface::class),
+                    $app->make(Repository::class)->get('translation.dump_prefix'),
                     $app->make(Repository::class)->get('translation.ignore_keys'),
                 ),
             );

@@ -3,6 +3,7 @@
 namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
 
 use Bambamboole\LaravelTranslationDumper\ArrayExporter;
+use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -64,7 +65,7 @@ class TranslationDumperTest extends TestCase
     {
         return [
             [
-                ['foo.bar.baz'],
+                [new Translation('foo.bar.baz', 'x-foo.bar.baz')],
                 ['foo' => ['bar' => ['baz' => 'x-foo.bar.baz']]],
             ],
         ];

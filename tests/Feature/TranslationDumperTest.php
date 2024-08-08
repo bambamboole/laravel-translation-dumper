@@ -3,6 +3,7 @@
 namespace Bambamboole\LaravelTranslationDumper\Tests\Feature;
 
 use Bambamboole\LaravelTranslationDumper\ArrayExporter;
+use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,14 @@ class TranslationDumperTest extends TestCase
         $workingPath = str_replace('lang', $testFolderName, self::TEST_LANGUAGE_PATH);
 
         $fs->copyDirectory(self::TEST_LANGUAGE_PATH, $workingPath);
-        $this->createSubject($workingPath)->dump(['test.dotted.additional', 'test undotted key', 'word', 'Works.']);
+        $translations = [
+            new Translation('test.dotted.additional', 'x-test.dotted.additional'),
+            new Translation('test.dotted.replacement', 'x-test.dotted.replacement', ['name' => 'foo']),
+            new Translation('test undotted key', 'x-test undotted key'),
+            new Translation('word', 'x-word'),
+            new Translation('Works.', 'x-Works.'),
+        ];
+        $this->createSubject($workingPath)->dump($translations);
 
         $files = $fs->allFiles($workingPath);
 

@@ -2,6 +2,7 @@
 
 namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
 
+use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\DumpingTranslator;
 use Bambamboole\LaravelTranslationDumper\TranslationDumperInterface;
 use Illuminate\Contracts\Translation\Translator;
@@ -100,7 +101,9 @@ class DumpingTranslatorTest extends TestCase
         $this->translationDumper
             ->expects($this->once())
             ->method('dump')
-            ->with([self::TEST_KEY]);
+            ->with(self::callback(
+                fn (array $translations) => $translations[0] instanceof Translation && $translations[0]->key === self::TEST_KEY,
+            ));
 
         $dumpingTranslator = $this->createDumpingTranslator();
         $dumpingTranslator->get(self::TEST_KEY);
