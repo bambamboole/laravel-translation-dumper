@@ -23,14 +23,17 @@ class TranslationDumper implements TranslationDumperInterface
     /** @param Translation[] $translations */
     public function dump(array $translations): void
     {
-        collect($translations)
-            ->groupBy(fn (Translation $translation) => TranslationIdentifier::identify($translation->key))
-            ->each(function (Collection $translations, string $type) {
-                match ($type) {
-                    TranslationType::PHP->value => $this->dumpPhpTranslations($translations->toArray()),
-                    TranslationType::JSON->value => $this->dumpJsonTranslations($translations->toArray()),
-                };
-            });
+        $jsonTranslations = [];
+        $phpTranslations = [];
+        foreach ($translations as $translation) {
+            if (TranslationIdentifier::identify($translation->key) === TranslationType::PHP) {
+                $phpTranslations[] = $translation;
+            } else {
+                $jsonTranslations[] = $translation;
+            }
+        }
+        $this->dumpPhpTranslations($phpTranslations);
+        $this->dumpJsonTranslations($jsonTranslations);
     }
 
     /** @param Translation[] $translations */
