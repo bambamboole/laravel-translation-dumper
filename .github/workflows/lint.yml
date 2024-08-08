@@ -3,6 +3,9 @@ name: PHP-CS-Fixer
 on:
   push:
 
+permissions:
+  contents: write
+
 jobs:
   pint:
     runs-on: ubuntu-latest
