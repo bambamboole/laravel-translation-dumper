@@ -27,6 +27,6 @@ return [
 
 EOT;
 
-        self::assertEquals($out, (new ArrayExporter())->export($in));
+        self::assertEquals($out, (new ArrayExporter)->export($in));
     }
 }

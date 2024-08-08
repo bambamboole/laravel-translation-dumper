@@ -14,7 +14,7 @@ class TranslationDumperTest extends TestCase
 
     public function testItDumpsKeysAsExpected(): void
     {
-        $fs = new Filesystem();
+        $fs = new Filesystem;
         $testFolderName = uniqid();
         $workingPath = str_replace('lang', $testFolderName, self::TEST_LANGUAGE_PATH);
 
@@ -43,8 +43,8 @@ class TranslationDumperTest extends TestCase
     private function createSubject(string $folder): TranslationDumper
     {
         return new TranslationDumper(
-            new Filesystem(),
-            new ArrayExporter(),
+            new Filesystem,
+            new ArrayExporter,
             $folder,
             'en',
         );

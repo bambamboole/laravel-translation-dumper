@@ -27,8 +27,8 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
             $this->app->singleton(
                 TranslationDumper::class,
                 static fn (Application $app) => new TranslationDumper(
-                    new Filesystem(),
-                    new ArrayExporter(),
+                    new Filesystem,
+                    new ArrayExporter,
                     $app->langPath(),
                     $app->make(Repository::class)->get('app.locale'),
                 ),
