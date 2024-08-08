@@ -4,7 +4,6 @@ namespace Bambamboole\LaravelTranslationDumper;
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 
 class TranslationDumper implements TranslationDumperInterface
 {
