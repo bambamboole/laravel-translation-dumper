@@ -5,7 +5,7 @@ return [
     'dumper' => \Bambamboole\LaravelTranslationDumper\TranslationDumper::class,
     'dump_prefix' => 'x-',
     'ignore_keys' => [
-        // These keys is used by Laravel validator to check if a custom validation message is present
+        // These keys are used by Laravel validator to check if a custom validation message is present
         'validation.custom',
         'validation.values',
         // Ignore namespaced keys since it is not implemented yet
