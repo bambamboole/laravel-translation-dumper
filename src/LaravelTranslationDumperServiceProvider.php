@@ -44,9 +44,9 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
                 static fn (Translator $translator, $app) => new DumpingTranslator(
                     $translator,
                     $app->make(TranslationDumperInterface::class),
-                    $app->make(Repository::class)->get('translation.dump_prefix'),
-                    $app->make(Repository::class)->get('translation.ignore_keys'),
-                    $app->make(Repository::class)->get('translation.dump_non_dotted_keys'),
+                    $app->make(Repository::class)->get('translation.dump_prefix', 'x-'),
+                    $app->make(Repository::class)->get('translation.ignore_keys', []),
+                    $app->make(Repository::class)->get('translation.dump_non_dotted_keys', false),
                 ),
             );
         }
