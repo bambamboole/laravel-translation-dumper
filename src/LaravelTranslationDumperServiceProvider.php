@@ -46,6 +46,7 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
                     $app->make(TranslationDumperInterface::class),
                     $app->make(Repository::class)->get('translation.dump_prefix'),
                     $app->make(Repository::class)->get('translation.ignore_keys'),
+                    $app->make(Repository::class)->get('translation.dump_non_dotted_keys'),
                 ),
             );
         }

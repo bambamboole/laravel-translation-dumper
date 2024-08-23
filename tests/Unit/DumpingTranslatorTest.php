@@ -13,7 +13,7 @@ class DumpingTranslatorTest extends TestCase
 {
     private const TEST_LOCALE = 'de';
 
-    private const TEST_KEY = 'foo';
+    private const TEST_KEY = 'foo.bar';
 
     private const TEST_REPLACEMENTS = ['buzz' => 'light year'];
 

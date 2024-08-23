@@ -16,6 +16,7 @@ class DumpingTranslator implements TranslatorInterface
         private readonly TranslationDumperInterface $translationDumper,
         private readonly string $dumpPrefix = 'x-',
         private readonly array $ignoreKeys = [],
+        private readonly bool $dumpNonDottedKeys = false,
     ) {}
 
     public function get($key, array $replace = [], $locale = null, $fallback = true)
@@ -61,6 +62,10 @@ class DumpingTranslator implements TranslatorInterface
 
     private function shouldBeIgnored(string $key): bool
     {
+        if (! $this->dumpNonDottedKeys && TranslationIdentifier::identify($key) === TranslationType::JSON) {
+            return true;
+        }
+
         foreach ($this->ignoreKeys as $ignoreKey) {
             if (str_contains($key, $ignoreKey)) {
                 return true;
