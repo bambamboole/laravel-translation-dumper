@@ -23,7 +23,7 @@ class TranslationDumperTest extends TestCase
     }
 
     /** @dataProvider provideTestData */
-    public function testItDumpsDottedKeysAsExpected(array $given, array $expected): void
+    public function test_it_dumps_dotted_keys_as_expected(array $given, array $expected): void
     {
         if (empty($expected)) {
             $this->filesystem

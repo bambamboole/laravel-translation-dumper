@@ -11,7 +11,7 @@ class TranslationDumperTest extends TestCase
 {
     private const TEST_LANGUAGE_PATH = __DIR__.'/fixtures/lang';
 
-    public function testItDumpsKeysAsExpected(): void
+    public function test_it_dumps_keys_as_expected(): void
     {
         $fs = new Filesystem;
         $testFolderName = uniqid();

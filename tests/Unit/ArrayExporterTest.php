@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class ArrayExporterTest extends TestCase
 {
-    public function testItCanDumpArraysInShortSyntax(): void
+    public function test_it_can_dump_arrays_in_short_syntax(): void
     {
         $in = [
             'foo' => 'bar',
@@ -30,7 +30,7 @@ EOT;
         self::assertEquals($out, ArrayExporter::export($in));
     }
 
-    public function testItOmitsIndexKeys(): void
+    public function test_it_omits_index_keys(): void
     {
         $in = [
             'foo' => 'bar',
@@ -59,7 +59,7 @@ EOT;
         self::assertEquals($out, ArrayExporter::export($in));
     }
 
-    public function testItHandlesMixedArrays(): void
+    public function test_it_handles_mixed_arrays(): void
     {
         $in = [
             'foo' => 'bar',
@@ -111,7 +111,7 @@ EOT;
         self::assertEquals($out, ArrayExporter::export($in));
     }
 
-    public function testItHandlesNonSequentialNumericKeys(): void
+    public function test_it_handles_non_sequential_numeric_keys(): void
     {
         $in = [
             'sparse' => [

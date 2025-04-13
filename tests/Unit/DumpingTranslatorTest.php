@@ -29,7 +29,7 @@ class DumpingTranslatorTest extends TestCase
         $this->translationDumper = $this->createMock(TranslationDumperInterface::class);
     }
 
-    public function testItProxiesGetAsExpected(): void
+    public function test_it_proxies_get_as_expected(): void
     {
         $this->translator
             ->expects($this->once())
@@ -48,7 +48,7 @@ class DumpingTranslatorTest extends TestCase
         );
     }
 
-    public function testItProxiesChoiceAsExpected(): void
+    public function test_it_proxies_choice_as_expected(): void
     {
         $this->translator
             ->expects($this->once())
@@ -67,7 +67,7 @@ class DumpingTranslatorTest extends TestCase
         );
     }
 
-    public function testItProxiesGetLocaleAsExpected(): void
+    public function test_it_proxies_get_locale_as_expected(): void
     {
         $this->translator
             ->expects($this->once())
@@ -77,7 +77,7 @@ class DumpingTranslatorTest extends TestCase
         self::assertEquals(self::TEST_LOCALE, $this->createDumpingTranslator()->getLocale());
     }
 
-    public function testItProxiesSetLocaleAsExpected(): void
+    public function test_it_proxies_set_locale_as_expected(): void
     {
         $this->translationDumper
             ->expects($this->once())
@@ -91,7 +91,7 @@ class DumpingTranslatorTest extends TestCase
         $this->createDumpingTranslator()->setLocale('de');
     }
 
-    public function testItCallsTheTranslationDumperOnDestruct(): void
+    public function test_it_calls_the_translation_dumper_on_destruct(): void
     {
         $this->translator
             ->expects($this->once())
