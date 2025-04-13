@@ -17,12 +17,9 @@ class TranslationDumperTest extends TestCase
 
     private MockObject|Filesystem $filesystem;
 
-    private MockObject|ArrayExporter $exporter;
-
     protected function setUp(): void
     {
         $this->filesystem = $this->createMock(Filesystem::class);
-        $this->exporter = $this->createMock(ArrayExporter::class);
     }
 
     /** @dataProvider provideTestData */
@@ -32,9 +29,6 @@ class TranslationDumperTest extends TestCase
             $this->filesystem
                 ->expects($this->never())
                 ->method('exists');
-            $this->exporter
-                ->expects($this->never())
-                ->method('export');
             $this->filesystem
                 ->expects($this->never())
                 ->method('put');
@@ -46,15 +40,10 @@ class TranslationDumperTest extends TestCase
                     ->method('exists')
                     ->with($file)
                     ->willReturn(false);
-                $this->exporter
-                    ->expects($this->once())
-                    ->method('export')
-                    ->with($expectedArray)
-                    ->willReturn('test');
                 $this->filesystem
                     ->expects($this->once())
                     ->method('put')
-                    ->with($file, 'test');
+                    ->with($file, ArrayExporter::export($expectedArray));
             }
         }
 
@@ -75,7 +64,6 @@ class TranslationDumperTest extends TestCase
     {
         return new TranslationDumper(
             $this->filesystem,
-            $this->exporter,
             self::TEST_LANGUAGE_FILE_PATH,
             self::TEST_LOCALE,
         );

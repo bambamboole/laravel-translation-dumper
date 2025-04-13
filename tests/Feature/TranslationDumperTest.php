@@ -2,7 +2,6 @@
 
 namespace Bambamboole\LaravelTranslationDumper\Tests\Feature;
 
-use Bambamboole\LaravelTranslationDumper\ArrayExporter;
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
@@ -44,7 +43,6 @@ class TranslationDumperTest extends TestCase
     {
         return new TranslationDumper(
             new Filesystem,
-            new ArrayExporter,
             $folder,
             'en',
         );
