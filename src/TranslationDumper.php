@@ -9,7 +9,6 @@ class TranslationDumper implements TranslationDumperInterface
 {
     public function __construct(
         private readonly Filesystem $filesystem,
-        private readonly ArrayExporter $exporter,
         private readonly string $languageFilePath,
         private string $locale,
     ) {}
@@ -44,9 +43,8 @@ class TranslationDumper implements TranslationDumperInterface
             $file = "{$path}/{$key}.php";
             $keys = $this->mergeWithExistingKeys($file, $value);
 
-            $content = $this->exporter->export($keys);
             $this->filesystem->ensureDirectoryExists($path);
-            $this->filesystem->put($file, $content);
+            $this->filesystem->put($file, ArrayExporter::export($keys));
         }
     }
 

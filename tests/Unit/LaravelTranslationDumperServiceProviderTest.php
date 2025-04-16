@@ -16,7 +16,7 @@ class LaravelTranslationDumperServiceProviderTest extends TestCase
         $this->app = $this->createMock(Application::class);
     }
 
-    public function testItDoesOnlyPublishConfigIfAppIsRunningInConsole(): void
+    public function test_it_does_only_publish_config_if_app_is_running_in_console(): void
     {
         $this->app
             ->expects($this->once())
