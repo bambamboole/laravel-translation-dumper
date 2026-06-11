@@ -47,6 +47,14 @@ jobs:
       - name: Pin Laravel ${{ matrix.laravel }}
         run: composer require "illuminate/contracts:^${{ matrix.laravel }}.0" --no-update --no-interaction
 
+      # The Laravel 11 branch is in security-only support and every released
+      # 11.x is currently flagged by a composer advisory with no patched 11.x
+      # to resolve to, which blocks dependency resolution. Allow it for the
+      # L11 jobs only so we can still test against it; 12/13 keep the guard.
+      - name: Allow advisory-flagged Laravel 11
+        if: matrix.laravel == '11'
+        run: composer config --no-plugins policy.advisories.block false
+
       - name: Install dependencies
         run: composer update --prefer-dist --no-progress --no-interaction
 
