@@ -50,8 +50,6 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true
-        },
-        "policy": {
         }
     },
     "extra": {

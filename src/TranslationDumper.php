@@ -4,6 +4,7 @@ namespace Bambamboole\LaravelTranslationDumper;
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 
 class TranslationDumper implements TranslationDumperInterface
 {
@@ -49,7 +50,7 @@ class TranslationDumper implements TranslationDumperInterface
         foreach ($byFile as $group => $entries) {
             $values = [];
             foreach ($entries as [$remainingKey, $value]) {
-                $this->assignNestedValue($values, explode('.', $remainingKey), $value);
+                Arr::set($values, $remainingKey, $value);
             }
 
             $file = "{$this->languageFilePath}/{$this->locale}/{$group}.php";
@@ -74,11 +75,15 @@ class TranslationDumper implements TranslationDumperInterface
         $segments = explode('.', $dottedKey);
         $base = "{$this->languageFilePath}/{$this->locale}";
 
+        // Walk from the deepest possible nested file down to the top level and
+        // use the first one that already exists, so the most specific existing
+        // file wins and we stop probing as soon as we find it.
         $depth = 1;
-        for ($candidateDepth = 2; $candidateDepth < count($segments); $candidateDepth++) {
+        for ($candidateDepth = count($segments) - 1; $candidateDepth >= 2; $candidateDepth--) {
             $candidate = $base.'/'.implode('/', array_slice($segments, 0, $candidateDepth)).'.php';
             if ($this->filesystem->exists($candidate)) {
                 $depth = $candidateDepth;
+                break;
             }
         }
 
@@ -86,24 +91,6 @@ class TranslationDumper implements TranslationDumperInterface
             implode('/', array_slice($segments, 0, $depth)),
             implode('.', array_slice($segments, $depth)),
         ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $target
-     * @param  string[]  $keys
-     */
-    private function assignNestedValue(array &$target, array $keys, string $value): void
-    {
-        $current = &$target;
-        while (count($keys) > 1) {
-            $key = array_shift($keys);
-            if (! isset($current[$key]) || ! is_array($current[$key])) {
-                $current[$key] = [];
-            }
-            $current = &$current[$key];
-        }
-        $current[array_shift($keys)] = $value;
-        unset($current);
     }
 
     /** @param Translation[] $translations */
