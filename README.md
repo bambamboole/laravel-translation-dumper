@@ -2,12 +2,17 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
 [![Total Downloads](https://img.shields.io/packagist/dt/bambamboole/laravel-translation-dumper.svg?style=flat-square)](https://packagist.org/packages/bambamboole/laravel-translation-dumper)
-![GitHub Actions](https://github.com/bambamboole/laravel-translation-dumper/actions/workflows/main.yml/badge.svg)
+![GitHub Actions](https://github.com/bambamboole/laravel-translation-dumper/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/bambamboole/laravel-translation-dumper/branch/main/graph/badge.svg?token=PTTDMH5DSJ)](https://codecov.io/gh/bambamboole/laravel-translation-dumper)
 
 This package provides an option to extend Laravels Translator to write missing 
 translation keys to their respective translation files.  
 This is especially useful if you have dynamic translation keys where static dumpers do not work.
+
+## Requirements
+
+- PHP 8.2+
+- Laravel 11, 12 or 13
 
 ## Installation
 
