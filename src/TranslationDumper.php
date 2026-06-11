@@ -37,15 +37,73 @@ class TranslationDumper implements TranslationDumperInterface
     /** @param Translation[] $translations */
     private function dumpPhpTranslations(array $translations): void
     {
-        $result = $this->transformDottedStringsToArray($translations);
-        foreach ($result as $key => $value) {
-            $path = $this->languageFilePath.'/'.$this->locale;
-            $file = "{$path}/{$key}.php";
-            $keys = $this->mergeWithExistingKeys($file, $value);
+        // Group every translation by the file it belongs in. A dotted key goes
+        // into a flat top level file by default, but if a matching nested file
+        // already exists we write into that one instead.
+        $byFile = [];
+        foreach ($translations as $translation) {
+            [$group, $remainingKey] = $this->resolveTargetFile($translation->key);
+            $byFile[$group][] = [$remainingKey, $this->prepareTranslationValue($translation)];
+        }
 
-            $this->filesystem->ensureDirectoryExists($path);
+        foreach ($byFile as $group => $entries) {
+            $values = [];
+            foreach ($entries as [$remainingKey, $value]) {
+                $this->assignNestedValue($values, explode('.', $remainingKey), $value);
+            }
+
+            $file = "{$this->languageFilePath}/{$this->locale}/{$group}.php";
+            $keys = $this->mergeWithExistingKeys($file, $values);
+
+            $this->filesystem->ensureDirectoryExists(dirname($file));
             $this->filesystem->put($file, ArrayExporter::export($keys));
         }
+    }
+
+    /**
+     * Decide which file a dotted key should be written to. By default the first
+     * segment becomes a flat top level file (e.g. entities.salesOrder.title ->
+     * entities.php). If a deeper nested file already exists on disk we target
+     * that one instead (entities/salesOrder.php), so existing nested files keep
+     * receiving their keys while new nested files are never created.
+     *
+     * @return array{0: string, 1: string} the group path and the remaining dotted key
+     */
+    private function resolveTargetFile(string $dottedKey): array
+    {
+        $segments = explode('.', $dottedKey);
+        $base = "{$this->languageFilePath}/{$this->locale}";
+
+        $depth = 1;
+        for ($candidateDepth = 2; $candidateDepth < count($segments); $candidateDepth++) {
+            $candidate = $base.'/'.implode('/', array_slice($segments, 0, $candidateDepth)).'.php';
+            if ($this->filesystem->exists($candidate)) {
+                $depth = $candidateDepth;
+            }
+        }
+
+        return [
+            implode('/', array_slice($segments, 0, $depth)),
+            implode('.', array_slice($segments, $depth)),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $target
+     * @param  string[]  $keys
+     */
+    private function assignNestedValue(array &$target, array $keys, string $value): void
+    {
+        $current = &$target;
+        while (count($keys) > 1) {
+            $key = array_shift($keys);
+            if (! isset($current[$key]) || ! is_array($current[$key])) {
+                $current[$key] = [];
+            }
+            $current = &$current[$key];
+        }
+        $current[array_shift($keys)] = $value;
+        unset($current);
     }
 
     /** @param Translation[] $translations */
@@ -68,30 +126,6 @@ class TranslationDumper implements TranslationDumperInterface
         ksort($mergedTranslations, SORT_NATURAL | SORT_FLAG_CASE);
         $this->filesystem->ensureDirectoryExists($this->languageFilePath);
         $this->filesystem->put($file, json_encode($mergedTranslations, JSON_PRETTY_PRINT).PHP_EOL);
-    }
-
-    /** @param Translation[] $translations */
-    private function transformDottedStringsToArray(array $translations): array
-    {
-        $result = [];
-
-        foreach ($translations as $translation) {
-            $keys = explode('.', $translation->key);
-            $current = &$result;
-
-            while (count($keys) > 1) {
-                $key = array_shift($keys);
-                if (! isset($current[$key])) {
-                    $current[$key] = [];
-                }
-                $current = &$current[$key];
-            }
-
-            $lastKey = array_shift($keys);
-            $current[$lastKey] = $this->prepareTranslationValue($translation);
-        }
-
-        return $result;
     }
 
     private function mergeWithExistingKeys(string $filePath, array $newKeys): array
