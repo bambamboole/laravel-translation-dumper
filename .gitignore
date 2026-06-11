@@ -1,5 +1,8 @@
 vendor
-.phpunit.result.cache
 composer.lock
+.phpunit.cache
+.phpunit.result.cache
+coverage
 coverage.xml
 .idea
+.DS_Store

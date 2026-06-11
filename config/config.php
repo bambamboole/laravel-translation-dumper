@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
+use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 
 return [
     'dump_translations' => env('DUMP_TRANSLATIONS', false),
-    'dumper' => \Bambamboole\LaravelTranslationDumper\TranslationDumper::class,
+    'dumper' => TranslationDumper::class,
     'dump_prefix' => 'x-',
     'dump_non_dotted_keys' => false,
     'ignore_keys' => [

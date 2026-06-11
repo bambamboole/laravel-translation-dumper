@@ -3,16 +3,17 @@
 namespace Bambamboole\LaravelTranslationDumper;
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
-use Illuminate\Contracts\Translation\Translator as TranslatorInterface;
+use Illuminate\Contracts\Translation\Translator as TranslatorContract;
+use Illuminate\Translation\Translator;
 
-class DumpingTranslator implements TranslatorInterface
+class DumpingTranslator implements TranslatorContract
 {
     private array $keysWithMissingTranslations = [];
 
     private array $missingTranslations = [];
 
     public function __construct(
-        private readonly TranslatorInterface $translator,
+        private readonly Translator $translator,
         private readonly TranslationDumperInterface $translationDumper,
         private readonly string $dumpPrefix = 'x-',
         private readonly array $ignoreKeys = [],

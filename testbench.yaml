@@ -1,0 +1,2 @@
+providers:
+  - Bambamboole\LaravelTranslationDumper\LaravelTranslationDumperServiceProvider

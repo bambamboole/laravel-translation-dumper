@@ -6,6 +6,7 @@ use Bambamboole\LaravelTranslationDumper\ArrayExporter;
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +23,7 @@ class TranslationDumperTest extends TestCase
         $this->filesystem = $this->createMock(Filesystem::class);
     }
 
-    /** @dataProvider provideTestData */
+    #[DataProvider('provideTestData')]
     public function test_it_dumps_dotted_keys_as_expected(array $given, array $expected): void
     {
         if (empty($expected)) {

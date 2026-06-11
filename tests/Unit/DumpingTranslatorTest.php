@@ -5,7 +5,7 @@ namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\DumpingTranslator;
 use Bambamboole\LaravelTranslationDumper\TranslationDumperInterface;
-use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Translation\Translator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
