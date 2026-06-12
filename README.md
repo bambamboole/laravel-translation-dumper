@@ -36,6 +36,39 @@ they will be written to the respective translation files in the structure that t
 part of the key is the file name and the rest is the nested path of a PHP array.
 As value it takes the translation key itself prefixed by a configurable prefix.
 
+By default a dotted key goes into a flat top level file (`a.b.c` → `a.php`), unless a
+matching nested file already exists (`a/b.php`), in which case the key is written there.
+
+## Writing translations
+
+Persistence is handled behind the `TranslationWriter` interface, and the package ships
+a `FileTranslationWriter` that reads, merges and writes the lang files (PHP via
+`brick/varexporter`, JSON with unescaped unicode/slashes, both with an exclusive lock).
+Bind your own implementation to `TranslationWriter::class` to persist elsewhere.
+
+```php
+use Bambamboole\LaravelTranslationDumper\FileTranslationWriter;
+use Bambamboole\LaravelTranslationDumper\TranslationDumper;
+
+$dumper = new TranslationDumper(new FileTranslationWriter($filesystem, lang_path()), 'en');
+```
+
+### Dumping into a specific (nested) file
+
+Pass a `group` to write every translation into one file, **creating it if needed** —
+the group is the path under the locale directory, so it can be nested:
+
+```php
+$dumper->dump([
+    new Translation('subtitle', 'x-subtitle'),
+    new Translation('status.open', 'x-status.open'),
+], 'entities/salesOrder');
+// -> lang/en/entities/salesOrder.php  (created), keys relative to the group
+```
+
+This pairs with i18next namespaces (`entities/salesOrder`), where the namespace is the
+group path: missing keys round-trip straight back into the matching nested file.
+
 ### Testing
 
 ```bash

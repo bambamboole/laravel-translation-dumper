@@ -1,67 +1,53 @@
 <?php declare(strict_types=1);
 
-namespace Bambamboole\LaravelTranslationDumper\Tests\Unit;
-
-use Bambamboole\LaravelTranslationDumper\ArrayExporter;
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
-use Illuminate\Filesystem\Filesystem;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Bambamboole\LaravelTranslationDumper\TranslationWriter;
 
-class TranslationDumperTest extends TestCase
-{
-    private const TEST_LANGUAGE_FILE_PATH = '/foo/bar';
+it('routes a dotted php key into a flat top level group when no nested file exists', function () {
+    $writer = $this->createMock(TranslationWriter::class);
+    $writer->method('hasGroup')->willReturn(false);
+    $writer->expects($this->once())
+        ->method('writeGroup')
+        ->with('de', 'foo', ['bar' => ['baz' => 'x-foo.bar.baz']]);
 
-    private const TEST_LOCALE = 'de';
+    (new TranslationDumper($writer, 'de'))->dump([new Translation('foo.bar.baz', 'x-foo.bar.baz')]);
+});
 
-    private MockObject|Filesystem $filesystem;
+it('targets an existing nested group file when one matches', function () {
+    $writer = $this->createMock(TranslationWriter::class);
+    $writer->method('hasGroup')->willReturnCallback(fn ($locale, $group) => $group === 'entities/salesOrder');
+    $writer->expects($this->once())
+        ->method('writeGroup')
+        ->with('de', 'entities/salesOrder', ['title' => 'x-entities.salesOrder.title']);
 
-    protected function setUp(): void
-    {
-        $this->filesystem = $this->createMock(Filesystem::class);
-    }
+    (new TranslationDumper($writer, 'de'))->dump([
+        new Translation('entities.salesOrder.title', 'x-entities.salesOrder.title'),
+    ]);
+});
 
-    #[DataProvider('provideTestData')]
-    public function test_it_dumps_dotted_keys_as_expected(array $given, array $expected): void
-    {
-        // No translation files exist yet, so every key falls back to a flat
-        // top level file named after its first segment.
-        $this->filesystem->method('exists')->willReturn(false);
+it('writes a non dotted key to the json file', function () {
+    $writer = $this->createMock(TranslationWriter::class);
+    $writer->expects($this->never())->method('writeGroup');
+    $writer->expects($this->once())
+        ->method('writeJson')
+        ->with('de', ['Welcome back' => 'x-Welcome back']);
 
-        if (empty($expected)) {
-            $this->filesystem
-                ->expects($this->never())
-                ->method('put');
-        } else {
-            $key = array_key_first($expected);
-            $file = self::TEST_LANGUAGE_FILE_PATH.'/'.self::TEST_LOCALE.'/'.$key.'.php';
-            $this->filesystem
-                ->expects($this->once())
-                ->method('put')
-                ->with($file, ArrayExporter::export($expected[$key]));
-        }
+    (new TranslationDumper($writer, 'de'))->dump([new Translation('Welcome back', 'x-Welcome back')]);
+});
 
-        $this->createTranslationDumper()->dump($given);
-    }
+it('writes every key into an explicit group without probing existing files', function () {
+    $writer = $this->createMock(TranslationWriter::class);
+    $writer->expects($this->never())->method('hasGroup');
+    $writer->expects($this->once())
+        ->method('writeGroup')
+        ->with('de', 'entities/salesOrder', [
+            'subtitle' => 'x-subtitle',
+            'status' => ['open' => 'x-status.open'],
+        ]);
 
-    public static function provideTestData(): array
-    {
-        return [
-            [
-                [new Translation('foo.bar.baz', 'x-foo.bar.baz')],
-                ['foo' => ['bar' => ['baz' => 'x-foo.bar.baz']]],
-            ],
-        ];
-    }
-
-    private function createTranslationDumper(): TranslationDumper
-    {
-        return new TranslationDumper(
-            $this->filesystem,
-            self::TEST_LANGUAGE_FILE_PATH,
-            self::TEST_LOCALE,
-        );
-    }
-}
+    (new TranslationDumper($writer, 'de'))->dump([
+        new Translation('subtitle', 'x-subtitle'),
+        new Translation('status.open', 'x-status.open'),
+    ], 'entities/salesOrder');
+});

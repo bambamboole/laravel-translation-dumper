@@ -15,9 +15,7 @@ abstract class TestCase extends BaseTestCase
         $this->langPath = sys_get_temp_dir().'/laravel-translation-dumper-tests/'.uniqid('lang-', true);
         (new Filesystem)->ensureDirectoryExists($this->langPath);
 
-        // The provider decides whether to decorate the translator inside register(),
-        // which runs before getEnvironmentSetUp(). The config default reads this env
-        // var, so it has to be set before the application boots.
+        // the provider reads this in register(), before getEnvironmentSetUp() runs
         putenv('DUMP_TRANSLATIONS=true');
         $_ENV['DUMP_TRANSLATIONS'] = $_SERVER['DUMP_TRANSLATIONS'] = 'true';
 

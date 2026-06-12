@@ -19,8 +19,6 @@ it('binds the configured translation dumper', function () {
 });
 
 it('still resolves translations through the decorated translator', function () {
-    // A missing key is returned verbatim by Laravel; the decorator records it
-    // for dumping without changing the returned value.
     expect(trans('some.missing.key'))->toBe('some.missing.key')
         ->and(app('translator')->getLocale())->toBe(config('app.locale'));
 });
