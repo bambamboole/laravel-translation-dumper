@@ -17,12 +17,7 @@ class TranslationDumper implements TranslationDumperInterface
         $this->locale = $locale;
     }
 
-    /**
-     * @param  Translation[]  $translations
-     * @param  ?string  $group  When given, every translation is written into this
-     *                          group file (created if needed), with keys relative
-     *                          to the group (e.g. "entities/salesOrder").
-     */
+    /** @param  Translation[]  $translations */
     public function dump(array $translations, ?string $group = null): void
     {
         if ($group !== null) {
@@ -45,11 +40,7 @@ class TranslationDumper implements TranslationDumperInterface
         $this->dumpJsonTranslations($jsonTranslations);
     }
 
-    /**
-     * Write every translation into one explicit group file, keys relative to it.
-     *
-     * @param  Translation[]  $translations
-     */
+    /** @param  Translation[]  $translations */
     private function dumpIntoGroup(array $translations, string $group): void
     {
         $values = [];
@@ -63,9 +54,6 @@ class TranslationDumper implements TranslationDumperInterface
     /** @param  Translation[]  $translations */
     private function dumpPhpTranslations(array $translations): void
     {
-        // Group every translation by the file it belongs in. A dotted key goes
-        // into a flat top level file by default, but if a matching nested file
-        // already exists we write into that one instead.
         $byFile = [];
         foreach ($translations as $translation) {
             [$group, $remainingKey] = $this->resolveTargetFile($translation->key);
@@ -82,15 +70,7 @@ class TranslationDumper implements TranslationDumperInterface
         }
     }
 
-    /**
-     * Decide which group a dotted key should be written to. By default the first
-     * segment becomes a flat top level file (entities.salesOrder.title ->
-     * entities). If a deeper nested file already exists we target that one
-     * instead (entities/salesOrder), so existing nested files keep receiving
-     * their keys while new nested files are never created implicitly.
-     *
-     * @return array{0: string, 1: string} the group path and the remaining dotted key
-     */
+    /** @return array{0: string, 1: string} */
     private function resolveTargetFile(string $dottedKey): array
     {
         $segments = explode('.', $dottedKey);

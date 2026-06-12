@@ -24,8 +24,8 @@ it('writes JSON translations with unescaped unicode and slashes', function () {
     $raw = $this->fs->get($this->lang.'/de.json');
 
     expect($raw)
-        ->toContain('Schöne Grüße')   // not ö / ü
-        ->toContain('Tür auf/zu')     // slash not escaped to \/
+        ->toContain('Schöne Grüße')
+        ->toContain('Tür auf/zu')
         ->not->toContain('\\u00')
         ->not->toContain('\\/');
 });
