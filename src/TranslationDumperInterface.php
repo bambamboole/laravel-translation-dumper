@@ -2,9 +2,14 @@
 
 namespace Bambamboole\LaravelTranslationDumper;
 
+use Bambamboole\LaravelTranslationDumper\DTO\Translation;
+
 interface TranslationDumperInterface
 {
     public function setLocale(string $locale): void;
 
-    public function dump(array $translations): void;
+    /**
+     * @param  array<int, Translation>  $translations
+     */
+    public function dump(array $translations, ?string $group = null): void;
 }

@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
+use Bambamboole\LaravelTranslationDumper\FileTranslationWriter;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
 
@@ -15,7 +16,7 @@ afterEach(function () {
 });
 
 it('writes JSON translations with unescaped unicode and slashes', function () {
-    (new TranslationDumper($this->fs, $this->lang, 'de'))->dump([
+    (new TranslationDumper(new FileTranslationWriter($this->fs, $this->lang), 'de'))->dump([
         new Translation('Schöne Grüße', 'Schöne Grüße'),
         new Translation('Open the door', 'Tür auf/zu'),
     ]);

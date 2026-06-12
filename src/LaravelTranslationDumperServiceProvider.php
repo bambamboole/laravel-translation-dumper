@@ -25,10 +25,14 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
 
         if ($this->app->make(Repository::class)->get('translation.dump_translations')) {
             $this->app->singleton(
+                TranslationWriter::class,
+                static fn (Application $app) => new FileTranslationWriter(new Filesystem, $app->langPath()),
+            );
+
+            $this->app->singleton(
                 TranslationDumper::class,
                 static fn (Application $app) => new TranslationDumper(
-                    new Filesystem,
-                    $app->langPath(),
+                    $app->make(TranslationWriter::class),
                     $app->make(Repository::class)->get('app.locale'),
                 ),
             );

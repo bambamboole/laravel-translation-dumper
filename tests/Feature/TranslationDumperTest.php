@@ -3,6 +3,7 @@
 namespace Bambamboole\LaravelTranslationDumper\Tests\Feature;
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
+use Bambamboole\LaravelTranslationDumper\FileTranslationWriter;
 use Bambamboole\LaravelTranslationDumper\TranslationDumper;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
@@ -42,8 +43,7 @@ class TranslationDumperTest extends TestCase
     private function createSubject(string $folder): TranslationDumper
     {
         return new TranslationDumper(
-            new Filesystem,
-            $folder,
+            new FileTranslationWriter(new Filesystem, $folder),
             'en',
         );
     }
