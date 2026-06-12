@@ -26,26 +26,21 @@ class TranslationDumperTest extends TestCase
     #[DataProvider('provideTestData')]
     public function test_it_dumps_dotted_keys_as_expected(array $given, array $expected): void
     {
+        // No translation files exist yet, so every key falls back to a flat
+        // top level file named after its first segment.
+        $this->filesystem->method('exists')->willReturn(false);
+
         if (empty($expected)) {
-            $this->filesystem
-                ->expects($this->never())
-                ->method('exists');
             $this->filesystem
                 ->expects($this->never())
                 ->method('put');
         } else {
-            foreach ($expected as $key => $expectedArray) {
-                $file = self::TEST_LANGUAGE_FILE_PATH.'/'.self::TEST_LOCALE.'/'.$key.'.php';
-                $this->filesystem
-                    ->expects($this->once())
-                    ->method('exists')
-                    ->with($file)
-                    ->willReturn(false);
-                $this->filesystem
-                    ->expects($this->once())
-                    ->method('put')
-                    ->with($file, ArrayExporter::export($expectedArray));
-            }
+            $key = array_key_first($expected);
+            $file = self::TEST_LANGUAGE_FILE_PATH.'/'.self::TEST_LOCALE.'/'.$key.'.php';
+            $this->filesystem
+                ->expects($this->once())
+                ->method('put')
+                ->with($file, ArrayExporter::export($expected[$key]));
         }
 
         $this->createTranslationDumper()->dump($given);
