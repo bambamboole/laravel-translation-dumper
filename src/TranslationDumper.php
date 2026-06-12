@@ -57,7 +57,7 @@ class TranslationDumper implements TranslationDumperInterface
             $keys = $this->mergeWithExistingKeys($file, $values);
 
             $this->filesystem->ensureDirectoryExists(dirname($file));
-            $this->filesystem->put($file, ArrayExporter::export($keys));
+            $this->filesystem->put($file, ArrayExporter::export($keys), lock: true);
         }
     }
 
@@ -112,7 +112,11 @@ class TranslationDumper implements TranslationDumperInterface
         $mergedTranslations = array_merge($existingKeys, $newTranslations);
         ksort($mergedTranslations, SORT_NATURAL | SORT_FLAG_CASE);
         $this->filesystem->ensureDirectoryExists($this->languageFilePath);
-        $this->filesystem->put($file, json_encode($mergedTranslations, JSON_PRETTY_PRINT).PHP_EOL);
+        $this->filesystem->put(
+            $file,
+            json_encode($mergedTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).PHP_EOL,
+            lock: true,
+        );
     }
 
     private function mergeWithExistingKeys(string $filePath, array $newKeys): array

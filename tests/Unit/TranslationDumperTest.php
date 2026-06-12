@@ -40,7 +40,7 @@ class TranslationDumperTest extends TestCase
             $this->filesystem
                 ->expects($this->once())
                 ->method('put')
-                ->with($file, ArrayExporter::export($expected[$key]));
+                ->with($file, ArrayExporter::export($expected[$key]), true);
         }
 
         $this->createTranslationDumper()->dump($given);

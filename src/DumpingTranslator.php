@@ -58,7 +58,15 @@ class DumpingTranslator implements TranslatorContract
             return;
         }
 
-        $this->translationDumper->dump($this->missingTranslations);
+        try {
+            $this->translationDumper->dump($this->missingTranslations);
+        } catch (\Throwable $e) {
+            // Never let a dump failure escape the destructor (it would surface as
+            // a fatal error during shutdown). Report it if a handler is available.
+            if (function_exists('report')) {
+                report($e);
+            }
+        }
     }
 
     private function shouldBeIgnored(string $key): bool
