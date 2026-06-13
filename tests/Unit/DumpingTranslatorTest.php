@@ -8,6 +8,8 @@ use Bambamboole\LaravelTranslationDumper\TranslationDumperInterface;
 use Illuminate\Translation\Translator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class DumpingTranslatorTest extends TestCase
 {
@@ -23,10 +25,13 @@ class DumpingTranslatorTest extends TestCase
 
     private MockObject|TranslationDumperInterface $translationDumper;
 
+    private LoggerInterface|MockObject $logger;
+
     protected function setUp(): void
     {
         $this->translator = $this->createMock(Translator::class);
         $this->translationDumper = $this->createMock(TranslationDumperInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     public function test_it_proxies_get_as_expected(): void
@@ -111,11 +116,40 @@ class DumpingTranslatorTest extends TestCase
         unset($dumpingTranslator);
     }
 
-    private function createDumpingTranslator(): DumpingTranslator
+    public function test_it_logs_dump_failures_on_destruct(): void
+    {
+        $exception = new RuntimeException('Could not write translations.');
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $this->translator
+            ->expects($this->once())
+            ->method('get')
+            ->with(self::TEST_KEY)
+            ->willReturn(self::TEST_KEY);
+        $this->translationDumper
+            ->expects($this->once())
+            ->method('dump')
+            ->willThrowException($exception);
+        $logger
+            ->expects($this->once())
+            ->method('error')
+            ->with(
+                'Failed to dump missing translations.',
+                ['exception' => $exception],
+            );
+
+        $dumpingTranslator = $this->createDumpingTranslator($logger);
+        $dumpingTranslator->get(self::TEST_KEY);
+
+        unset($dumpingTranslator);
+    }
+
+    private function createDumpingTranslator(?LoggerInterface $logger = null): DumpingTranslator
     {
         return new DumpingTranslator(
             $this->translator,
             $this->translationDumper,
+            $logger ?? $this->logger,
         );
     }
 }

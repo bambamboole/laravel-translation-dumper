@@ -2,13 +2,19 @@
 
 namespace Bambamboole\LaravelTranslationDumper;
 
+use Closure;
 use Illuminate\Filesystem\Filesystem;
+use InvalidArgumentException;
 
-class FileTranslationWriter implements TranslationWriter
+class FileTranslationWriter implements NamespacedTranslationWriter, TranslationWriter
 {
+    /**
+     * @param  array<string, string>|Closure(): array<string, string>  $namespacePaths
+     */
     public function __construct(
         private readonly Filesystem $filesystem,
         private readonly string $languageFilePath,
+        private readonly array|Closure $namespacePaths = [],
     ) {}
 
     public function hasGroup(string $locale, string $group): bool
@@ -16,13 +22,28 @@ class FileTranslationWriter implements TranslationWriter
         return $this->filesystem->exists($this->groupPath($locale, $group));
     }
 
+    public function hasNamespacedGroup(string $locale, string $namespace, string $group): bool
+    {
+        return $this->filesystem->exists($this->groupPath($locale, $group, $this->namespacePath($namespace)));
+    }
+
     public function writeGroup(string $locale, string $group, array $translations): void
+    {
+        $this->writeGroupFile($this->languageFilePath, $locale, $group, $translations);
+    }
+
+    public function writeNamespacedGroup(string $locale, string $namespace, string $group, array $translations): void
+    {
+        $this->writeGroupFile($this->namespacePath($namespace), $locale, $group, $translations);
+    }
+
+    private function writeGroupFile(string $languageFilePath, string $locale, string $group, array $translations): void
     {
         if ($translations === []) {
             return;
         }
 
-        $file = $this->groupPath($locale, $group);
+        $file = $this->groupPath($locale, $group, $languageFilePath);
         $existing = $this->filesystem->exists($file) ? require $file : [];
         $merged = $this->mergeArrays($existing, $translations);
 
@@ -52,9 +73,37 @@ class FileTranslationWriter implements TranslationWriter
         );
     }
 
-    private function groupPath(string $locale, string $group): string
+    private function groupPath(string $locale, string $group, ?string $languageFilePath = null): string
     {
-        return "{$this->languageFilePath}/{$locale}/{$group}.php";
+        $languageFilePath ??= $this->languageFilePath;
+
+        return rtrim($languageFilePath, '/')."/{$locale}/{$group}.php";
+    }
+
+    private function namespacePath(string $namespace): string
+    {
+        $namespacePaths = $this->namespacePaths();
+
+        if (! isset($namespacePaths[$namespace])) {
+            throw new InvalidArgumentException("Translation namespace [{$namespace}] is not registered.");
+        }
+
+        return $namespacePaths[$namespace];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function namespacePaths(): array
+    {
+        if (! $this->namespacePaths instanceof Closure) {
+            return $this->namespacePaths;
+        }
+
+        /** @var array<string, string> $namespacePaths */
+        $namespacePaths = ($this->namespacePaths)();
+
+        return $namespacePaths;
     }
 
     /**

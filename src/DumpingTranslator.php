@@ -3,8 +3,10 @@
 namespace Bambamboole\LaravelTranslationDumper;
 
 use Bambamboole\LaravelTranslationDumper\DTO\Translation;
+use Closure;
 use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Translation\Translator;
+use Psr\Log\LoggerInterface;
 
 class DumpingTranslator implements TranslatorContract
 {
@@ -15,9 +17,11 @@ class DumpingTranslator implements TranslatorContract
     public function __construct(
         private readonly Translator $translator,
         private readonly TranslationDumperInterface $translationDumper,
+        private readonly LoggerInterface $logger,
         private readonly string $dumpPrefix = 'x-',
         private readonly array $ignoreKeys = [],
         private readonly bool $dumpNonDottedKeys = false,
+        private readonly array|Closure $dumpNamespaces = [],
     ) {}
 
     public function get($key, array $replace = [], $locale = null, $fallback = true)
@@ -61,16 +65,33 @@ class DumpingTranslator implements TranslatorContract
         try {
             $this->translationDumper->dump($this->missingTranslations);
         } catch (\Throwable $e) {
-            // a throwing destructor becomes a fatal error during shutdown
-            if (function_exists('report')) {
-                report($e);
-            }
+            $this->logDumpFailure($e);
+        }
+    }
+
+    private function logDumpFailure(\Throwable $e): void
+    {
+        try {
+            $this->logger->error('Failed to dump missing translations.', [
+                'exception' => $e,
+            ]);
+        } catch (\Throwable) {
         }
     }
 
     private function shouldBeIgnored(string $key): bool
     {
-        if (! $this->dumpNonDottedKeys && TranslationIdentifier::identify($key) === TranslationType::JSON) {
+        [$namespace, $translationKey] = $this->parseNamespacedKey($key);
+
+        if ($namespace !== null && ! in_array($namespace, $this->dumpNamespaces(), true)) {
+            return true;
+        }
+
+        if ($namespace !== null && TranslationIdentifier::identify($translationKey) === TranslationType::JSON) {
+            return true;
+        }
+
+        if (! $this->dumpNonDottedKeys && TranslationIdentifier::identify($translationKey) === TranslationType::JSON) {
             return true;
         }
 
@@ -81,5 +102,32 @@ class DumpingTranslator implements TranslatorContract
         }
 
         return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function dumpNamespaces(): array
+    {
+        if (! $this->dumpNamespaces instanceof Closure) {
+            return $this->dumpNamespaces;
+        }
+
+        /** @var array<int, string> $dumpNamespaces */
+        $dumpNamespaces = ($this->dumpNamespaces)();
+
+        return $dumpNamespaces;
+    }
+
+    /** @return array{0: string|null, 1: string} */
+    private function parseNamespacedKey(string $key): array
+    {
+        if (! str_contains($key, '::')) {
+            return [null, $key];
+        }
+
+        [$namespace, $key] = explode('::', $key, 2);
+
+        return [$namespace, $key];
     }
 }

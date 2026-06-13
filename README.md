@@ -69,6 +69,25 @@ $dumper->dump([
 This pairs with i18next namespaces (`entities/salesOrder`), where the namespace is the
 group path: missing keys round-trip straight back into the matching nested file.
 
+### Dumping Laravel package namespaces
+
+Laravel package translation keys use the `package::file.line` syntax after the
+package has registered its lang directory with `loadTranslationsFrom($path, 'package')`.
+Namespaced package keys are ignored by default. Enable the namespaces you want to
+dump in `config/translation.php`:
+
+```php
+'dump_namespaces' => ['courier'],
+```
+
+With that enabled, a missing `__('courier::messages.welcome')` call writes to the
+registered package lang path, for example `packages/courier/lang/en/messages.php`.
+Keys without a namespace continue to be dumped without a `package::` prefix.
+
+Package namespace dumping is for PHP translation files (`package::file.line`).
+JSON translation paths registered with `loadJsonTranslationsFrom()` continue to use
+Laravel's JSON translation flow.
+
 ### Testing
 
 ```bash
@@ -91,4 +110,3 @@ If you discover any security related issues, please email manuel@christlieb.eu i
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
