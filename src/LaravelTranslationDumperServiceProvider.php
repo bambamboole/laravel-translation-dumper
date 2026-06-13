@@ -2,11 +2,11 @@
 
 namespace Bambamboole\LaravelTranslationDumper;
 
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Translation\Translator;
+use Psr\Log\LoggerInterface;
 
 class LaravelTranslationDumperServiceProvider extends ServiceProvider
 {
@@ -23,23 +23,27 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'translation');
 
-        if ($this->app->make(Repository::class)->get('translation.dump_translations')) {
+        if (config('translation.dump_translations')) {
             $this->app->singleton(
                 TranslationWriter::class,
-                static fn (Application $app) => new FileTranslationWriter(new Filesystem, $app->langPath()),
+                static fn (Application $app) => new FileTranslationWriter(
+                    $app->make(Filesystem::class),
+                    $app->langPath(),
+                    static fn (): array => $app->make('translation.loader')->namespaces(),
+                ),
             );
 
             $this->app->singleton(
                 TranslationDumper::class,
                 static fn (Application $app) => new TranslationDumper(
                     $app->make(TranslationWriter::class),
-                    $app->make(Repository::class)->get('app.locale'),
+                    config('app.locale'),
                 ),
             );
 
             $this->app->bind(
                 TranslationDumperInterface::class,
-                static fn (Application $app) => $app->make($app->make(Repository::class)->get('translation.dumper'))
+                static fn (Application $app) => $app->make(config('translation.dumper'))
             );
 
             $this->app->extend(
@@ -47,9 +51,11 @@ class LaravelTranslationDumperServiceProvider extends ServiceProvider
                 static fn (Translator $translator, $app) => new DumpingTranslator(
                     $translator,
                     $app->make(TranslationDumperInterface::class),
-                    $app->make(Repository::class)->get('translation.dump_prefix', 'x-'),
-                    $app->make(Repository::class)->get('translation.ignore_keys', []),
-                    $app->make(Repository::class)->get('translation.dump_non_dotted_keys', false),
+                    $app->make(LoggerInterface::class),
+                    config('translation.dump_prefix', 'x-'),
+                    config('translation.ignore_keys', []),
+                    config('translation.dump_non_dotted_keys', false),
+                    static fn (): array => config('translation.dump_namespaces', []),
                 ),
             );
         }
